@@ -1,17 +1,11 @@
 import { createApp } from 'vue'
-import { createStore } from "vuex"
 import App from './App.vue'
 import router from './router'
-
-const stroe = createStore({
-    state: {
-        count: 0,
-    }
-})
-
-console.log("stroe", stroe.state.count)
+import stroe from './store'
 
 const app = createApp(App)
 
 app.use(router)
+app.use(stroe)
+
 app.mount('#app')
