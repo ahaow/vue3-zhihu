@@ -1,6 +1,6 @@
 <template>
   <div class="create-post-page">
-    <h4>{{isEditMode ? '编辑文章' : '新建文章'}}</h4>
+    <h4>{{ isEditMode ? "编辑文章" : "新建文章" }}</h4>
     <uploader
       action="/upload"
       :beforeUpload="uploadCheck"
@@ -19,7 +19,7 @@
       </template>
       <template #uploaded="dataProps">
         <div class="uploaded-area">
-          <img :src="dataProps.uploadedData.data.url">
+          <img :src="dataProps.uploadedData.data.url" />
           <h3>点击重新上传</h3>
         </div>
       </template>
@@ -28,7 +28,8 @@
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
         <validate-input
-          :rules="titleRules" v-model="titleVal"
+          :rules="titleRules"
+          v-model="titleVal"
           placeholder="请输入文章标题"
           type="text"
         />
@@ -44,51 +45,66 @@
         />
       </div>
       <template #submit>
-        <button class="btn btn-primary btn-large">{{isEditMode ? '更新文章' : '发表文章'}}
-</button>
+        <button class="btn btn-primary btn-large">
+          {{ isEditMode ? "更新文章" : "发表文章" }}
+        </button>
       </template>
     </validate-form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter, useRoute } from 'vue-router'
-import { GlobalDataProps } from '../store'
-import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
-import ValidateForm from '../components/ValidateForm.vue'
+import { defineComponent, ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
+import { GlobalDataProps, PostProps } from "../store";
+import ValidateInput, { RulesProp } from "../components/ValidateInput.vue";
+import ValidateForm from "../components/ValidateForm.vue";
 export default defineComponent({
-  name: 'Login',
+  name: "Login",
   components: {
     ValidateInput,
     ValidateForm,
   },
   setup() {
-    const uploadedData = ref()
-    const titleVal = ref('')
-    const router = useRouter()
-    const route = useRoute()
-    const isEditMode = !!route.query.id
-    const store = useStore<GlobalDataProps>()
-    let imageId = ''
+    const uploadedData = ref();
+    const titleVal = ref("");
+    const router = useRouter();
+    const route = useRoute();
+    const isEditMode = !!route.query.id;
+    const store = useStore<GlobalDataProps>();
+    let imageId = "";
     const titleRules: RulesProp = [
-      { type: 'required', message: '文章标题不能为空' }
-    ]
-    const contentVal = ref('')
+      { type: "required", message: "文章标题不能为空" },
+    ];
+    const contentVal = ref("");
     const contentRules: RulesProp = [
-      { type: 'required', message: '文章详情不能为空' }
-    ]
-    onMounted(() => {
-      
-    })
-    
+      { type: "required", message: "文章详情不能为空" },
+    ];
+    onMounted(() => {});
+
     const onFormSubmit = (result: boolean) => {
-      
-    }
-    const uploadCheck = (file: File) => {
-      
-    }
+      if (result) {
+        const { columnId } = store.state.user;
+        if (columnId) {
+          const newPost: PostProps = {
+            id: +new Date(),
+            title: titleVal.value,
+            content: contentVal.value,
+            columnId: columnId,
+            createdAt: new Date().toLocaleString(),
+          };
+          store.commit("createPost", newPost);
+          router.push({
+            name: "column",
+            params: {
+              id: columnId,
+            },
+          });
+        }
+      }
+    };
+    const uploadCheck = (file: File) => {};
     return {
       titleRules,
       titleVal,
@@ -97,10 +113,10 @@ export default defineComponent({
       onFormSubmit,
       uploadCheck,
       uploadedData,
-      isEditMode
-    }
-  }
-})
+      isEditMode,
+    };
+  },
+});
 </script>
 <style>
 .create-post-page .file-upload-container {
